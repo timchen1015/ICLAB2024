@@ -21,15 +21,19 @@ wire  [1:0]  result;
 
 initial begin
   `ifdef RTL
-    $fsdbDumpfile("BB.fsdb");
-    $fsdbDumpvars(0, "+mda");
-    $fsdbDumpvars();
+    `ifndef NO_FSDB
+      $fsdbDumpfile("BB.fsdb");
+      $fsdbDumpvars(0, "+mda");
+      $fsdbDumpvars();
+    `endif
   `endif
   `ifdef GATE
     $sdf_annotate("BB_SYN.sdf", u_BB);
-    $fsdbDumpfile("BB_SYN.fsdb");
-    $fsdbDumpvars(0, "+mda");
-    $fsdbDumpvars();    
+    `ifndef NO_FSDB
+      $fsdbDumpfile("BB_SYN.fsdb");
+      $fsdbDumpvars(0, "+mda");
+      $fsdbDumpvars();
+    `endif
   `endif
 end
 

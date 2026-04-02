@@ -18,10 +18,25 @@ pt_log="pt.log"       	# Name of your synthesis log file
 num_CPU_cores=4               # Maximum Number of CPU that used for simulation/synthesis
 TIMESCALE=-timescale=1ns/1fs
 TIMESCALE1=-timescale 1ns/1fs
-VERDI=/usr/cad/synopsys/verdi/2019.06/
+VERDI=/usr/cad/synopsys/verdi/cur/
 DW_SIM=/usr/cad/synopsys/synthesis/cur/dw/sim_ver/
 UMC018_SIM=~iclabTA01/umc018/Verilog/umc18_neg.v
 UMC018_IO_SIM=~iclabTA01/umc018/Verilog/umc18io3v5v.v
+
+# Verdi/Novas PLI (FSDB dumping)
+# Newer Verdi versions deprecate the old novas.tab flow; prefer verdi.tab.
+PLI_TAB = $(firstword $(wildcard \
+	${VERDI}/share/PLI/VCS/linux64/verdi.tab \
+	${VERDI}/share/PLI/VCS/LINUX64/verdi.tab \
+	${VERDI}/share/PLI/VCS/linux64/novas.tab \
+	${VERDI}/share/PLI/VCS/LINUX64/novas.tab))
+PLI_LIB = $(firstword $(wildcard \
+	${VERDI}/share/PLI/VCS/linux64/pli.a \
+	${VERDI}/share/PLI/VCS/LINUX64/pli.a))
+VCS_PLI = $(if $(PLI_TAB),$(if $(PLI_LIB),-P $(PLI_TAB) $(PLI_LIB),),)
+
+# If PLI isn't available, disable FSDB dumping in TESTBED to avoid VCS errors.
+FSDB_DEFINE = $(if $(VCS_PLI),,+define+NO_FSDB)
 
 ######################################
 # Simulation Option and Command
@@ -30,7 +45,7 @@ UMC018_IO_SIM=~iclabTA01/umc018/Verilog/umc18io3v5v.v
 # =====================================
 # ============== VCS ==================
 # =====================================
-VCS_RTL_SIM = vcs ${TIMESCALE} \
+VCS_RTL_SIM = VERDI_HOME=${VERDI} vcs ${TIMESCALE} \
     -j${num_CPU_cores} \
     -sverilog \
     +v2k \
@@ -43,13 +58,13 @@ VCS_RTL_SIM = vcs ${TIMESCALE} \
     -f ${source_file} \
     -o ${output_file} \
     -l ${log_file} \
-    -P ${VERDI}/share/PLI/VCS/linux64/novas.tab \
-       ${VERDI}/share/PLI/VCS/linux64/pli.a \
+	 ${VCS_PLI} \
+	 ${FSDB_DEFINE} \
     +define+RTL \
     +notimingchecks 
 
 
-VCS_GATE_SIM = vcs ${TIMESCALE} \
+VCS_GATE_SIM = VERDI_HOME=${VERDI} vcs ${TIMESCALE} \
     -j${num_CPU_cores} \
     -sverilog \
     +v2k \
@@ -60,13 +75,13 @@ VCS_GATE_SIM = vcs ${TIMESCALE} \
     -f ${source_file} \
     -o ${output_file} \
     -l ${log_file} \
-    -P ${VERDI}/share/PLI/VCS/linux64/novas.tab \
-       ${VERDI}/share/PLI/VCS/linux64/pli.a \
+	${VCS_PLI} \
+	${FSDB_DEFINE} \
 	-v ${UMC018_SIM} \
     +define+GATE \
 	+neg_tchk 
 
-VCS_POST_SIM = vcs ${TIMESCALE} \
+VCS_POST_SIM = VERDI_HOME=${VERDI} vcs ${TIMESCALE} \
     -j${num_CPU_cores} \
     -sverilog \
     +v2k \
@@ -77,8 +92,8 @@ VCS_POST_SIM = vcs ${TIMESCALE} \
     -f ${source_file} \
     -o ${output_file} \
     -l ${log_file} \
-    -P ${VERDI}/share/PLI/VCS/linux64/novas.tab \
-       ${VERDI}/share/PLI/VCS/linux64/pli.a \
+	${VCS_PLI} \
+	${FSDB_DEFINE} \
     -v ${UMC018_SIM} \
 	-v ${UMC018_IO_SIM} \
     +define+POST \
