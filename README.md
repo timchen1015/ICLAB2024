@@ -1,6 +1,7 @@
 ## Lab List
 
 ### [Lab 1: Snack Shopping and Calculator (SSC)](Lab1/)
+### [Lab 2: Baseball Game (BB)](Lab2/)
 
 ## How to Run (for each Lab)
 
