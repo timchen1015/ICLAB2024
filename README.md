@@ -1,7 +1,7 @@
 ## Lab List
 
-### [Lab 1: Snack Shopping and Calculator (SSC)](Lab1/)
-### [Lab 2: Baseball Game (BB)](Lab2/)
+### [Lab 1: Snack Shopping and Calculator (SSC)](Lab1/) - Combinational circuit
+### [Lab 2: Baseball Game (BB)](Lab2/) - Finite state machine (FSM)
 
 ## How to Run (for each Lab)
 
@@ -18,3 +18,4 @@ make vcs_rtl
 ```
 
 `n` means the lab number, for example: `Lab1`, `Lab2`, ...
+
