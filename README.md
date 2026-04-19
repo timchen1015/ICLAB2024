@@ -2,6 +2,7 @@
 
 ### [Lab 1: Snack Shopping and Calculator (SSC)](Lab1/) - Combinational circuit
 ### [Lab 2: Baseball Game (BB)](Lab2/) - Finite state machine (FSM)
+### [Lab 3: Tetris Game (TETRIS)](Lab3/) - Pattern design
 
 ## How to Run (for each Lab)
 
