@@ -1,4 +1,7 @@
-## Lab List
+#  ICLAB Lab  2024
+
+This repository contains Verilog hardware design lab assignments for ICLAB course at National Yang Ming Chiao Tung University (NYCU)
+## Structure
 
 ### [Lab 1: Snack Shopping and Calculator (SSC)](Lab1/) - Combinational circuit
 ### [Lab 2: Baseball Game (BB)](Lab2/) - Finite state machine (FSM)

@@ -269,7 +269,7 @@ end
 
 
 // Formula for calculating the drop position:
-// Yi = top[x+i] - bottom_i_y    (i = 0, 1, 2, 3) 
+// Yi = top[x+i] - bottom_i_y    (i = 0, 1, 2, 3)  How much space can Ybase drop before the tetromino touches the existing blocks.
 // Ybase = Max(Y0, Y1, Y2, Y3)   : baesment of 4*4 block
 always @(*) begin
 	Y0 = top[p_reg] 	 - $signed({1'b0, bottom0_y});
