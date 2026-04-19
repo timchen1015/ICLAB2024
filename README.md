@@ -7,7 +7,7 @@ This repository contains Verilog hardware design lab assignments for ICLAB cours
 ### [Lab 2: Baseball Game (BB)](Lab2/) - Finite state machine (FSM)
 ### [Lab 3: Tetris Game (TETRIS)](Lab3/) - Pattern design
 
-## How to Run (for each Lab)
+## How to Run 
 
 1. Go to the testbed directory of the target lab:
 
