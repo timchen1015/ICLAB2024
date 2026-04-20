@@ -77,4 +77,32 @@ reg [5:0] map [0:15];
 
 ## Part 2: PATTERN.v Design
 
-// Undo yet
+### SPEC-4 to SPEC-8 Verification Checklist
+
+The PATTERN testbench checks the following five requirements:
+
+1. SPEC-4 (Reset behavior)
+- The reset signal (`rst_n`) is asserted only once at the beginning of simulation.
+- All output signals must be reset correctly.
+- The checker samples outputs 100 ns after `rst_n` is pulled low.
+
+2. SPEC-5 (Output-zero constraints when valid is low)
+- `score`, `fail`, and `tetris_valid` must be `0` when `score_valid` is low.
+- `tetris` must be reset to `0` when `tetris_valid` is low.
+
+3. SPEC-6 (Latency limit)
+- Each input set must complete within 1000 cycles.
+- Latency is defined as the cycle count between:
+	the falling edge of `in_valid` and the rising edge of `score_valid`.
+
+4. SPEC-7 (Correctness of functional outputs)
+- When `score_valid` is high, `score` and `fail` must match the golden result.
+- When `tetris_valid` is high, `tetris` must match the golden board.
+
+5. SPEC-8 (Valid pulse width)
+- `score_valid` and `tetris_valid` cannot stay high for more than 1 cycle.
+- Both signals must be deasserted in the immediate next cycle.
+
+### Golden Model Note
+
+The golden-board/golden-score calculation in this PATTERN is directly reused from an existing reference implementation by the original author.
