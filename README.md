@@ -23,3 +23,10 @@ make vcs_rtl
 
 `n` means the lab number, for example: `Lab1`, `Lab2`, ...
 
+## Source Acknowledgement
+
+This work is based on material cloned from:
+https://github.com/BoooC/NYCU_ICLAB_2024_FALL/tree/main
+
+Credit to the original author. Modifications were made for personal course practice.
+
