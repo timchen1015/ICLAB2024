@@ -7,6 +7,7 @@ This repository contains Verilog hardware design lab assignments for ICLAB cours
 ### [Lab 2: Baseball Game (BB)](Lab2/) - Finite state machine (FSM)
 ### [Lab 3: Tetris Game (TETRIS)](Lab3/) - Pattern design
 ### [Lab 4: Convolution Neural Network (CNN)](Lab4/) - Convolution and DesignWare
+### [Lab 7: Convolution with Clock Domain Crossing](Lab7/) - Handshake and asynchronous FIFO synchronizer
 
 ## How to Run 
 
