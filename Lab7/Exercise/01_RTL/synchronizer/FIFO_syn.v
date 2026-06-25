@@ -40,14 +40,14 @@ wire [ADDR_WIDTH:0] wptr_gray_sync;
 wire [ADDR_WIDTH:0] rptr_gray_sync;
 
 
-NDFF_syn #(.WIDTH(ADDR_WIDTH+1)) u_wptr_sync (
+NDFF_BUS_syn #(.WIDTH(ADDR_WIDTH+1)) u_wptr_sync (
     .D(wptr_gray),
     .Q(wptr_gray_sync),
     .clk(rclk),
     .rst_n(rst_n)
 );
 
-NDFF_syn #(.WIDTH(ADDR_WIDTH+1)) u_rptr_sync (
+NDFF_BUS_syn #(.WIDTH(ADDR_WIDTH+1)) u_rptr_sync (
     .D(rptr_gray),
     .Q(rptr_gray_sync),
     .clk(wclk),
