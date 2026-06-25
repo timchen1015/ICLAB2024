@@ -5,8 +5,8 @@ module CLK_1_MODULE (
     input [17:0] in_row,
     input [11:0] in_kernel,
     input out_idle,
-    output handshake_sready,
-    output [29:0] handshake_din,
+    output reg handshake_sready,
+    output reg [29:0] handshake_din,
     input fifo_empty,
     input [7:0] fifo_rdata,
     output fifo_rinc,
@@ -22,18 +22,21 @@ reg [7:0]  fifo_read_count;
 reg [7:0]  output_count;
 reg        fifo_rinc_d;
 reg        wait_fifo_empty;
+reg        wait_handshake_ack;
 
 wire [29:0] in_combine = {in_row, in_kernel};
-wire [2:0]  available_count = in_count + {2'b0, in_valid};
-wire        send_valid = (send_count < available_count);
-wire        send_fire = send_valid & out_idle;
-wire        send_current = in_valid & (send_count == in_count);
-wire [29:0] buffered_data = (send_count < 3'd6) ? in_buffer[send_count] : 30'd0;
-wire        input_clear = !in_valid & (in_count == 3'd6) & (send_count == 3'd6);
+wire        send_fire = handshake_sready & out_idle;
+wire [2:0]  load_count = send_count + {2'b0, send_fire};
+wire [2:0]  available_count_next = in_count + {2'b0, in_valid};
+wire        load_valid = (load_count < available_count_next);
+wire        load_current = in_valid & (load_count == in_count);
+wire [29:0] load_data = load_current ? in_combine :
+                         ((load_count < 3'd6) ? in_buffer[load_count] : 30'd0);
+wire        can_load_handshake = !handshake_sready & !wait_handshake_ack & out_idle;
+wire        input_clear = !in_valid & (in_count == 3'd6) & (send_count == 3'd6) &
+                          !handshake_sready & !wait_handshake_ack;
 wire        output_last = fifo_rinc_d & (output_count == 8'd149);
 
-assign handshake_sready = send_valid;
-assign handshake_din = send_current ? in_combine : buffered_data;
 assign fifo_rinc = !wait_fifo_empty & !fifo_empty & (fifo_read_count < 8'd150);
 
 integer i;
@@ -57,12 +60,31 @@ end
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         send_count <= 3'd0;
+        handshake_sready <= 1'b0;
+        handshake_din <= 30'd0;
+        wait_handshake_ack <= 1'b0;
     end
     else if (input_clear) begin
         send_count <= 3'd0;
+        handshake_sready <= 1'b0;
+        handshake_din <= 30'd0;
+        wait_handshake_ack <= 1'b0;
     end
-    else if (send_fire) begin
-        send_count <= send_count + 3'd1;
+    else begin
+        if (send_fire) begin
+            send_count <= send_count + 3'd1;
+            handshake_sready <= 1'b0;
+            wait_handshake_ack <= 1'b1;
+        end
+        else if (wait_handshake_ack && out_idle) begin
+            wait_handshake_ack <= 1'b0;
+        end
+        else if (can_load_handshake) begin
+            handshake_sready <= load_valid;
+            if (load_valid) begin
+                handshake_din <= load_data;
+            end
+        end
     end
 end
 
