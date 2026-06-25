@@ -6,19 +6,14 @@ set_reset_max_iterations 2000
 
 ## ----------------- Setting Variables ---------------- ##
 set design_path "../01_RTL"
-set mem_path "../04_MEM"
 set report_dir "./Report"
 set DESIGN "CONV_TOP"
-set MEM "DUAL_64X8X1BM1"
+file mkdir $report_dir
 
 ## ------------- Loading Custom Rule File ------------- ##
 
 ## --------------- Analyzing the Design --------------- ##
-analyze -sv ${mem_path}/$MEM\.v
-analyze -sv ${design_path}/$DESIGN\.v 
-
-## ----------------- Reading Liberty ------------------ ##
-liberty -load ${mem_path}/$MEM\_WC.lib 
+analyze -sv +incdir+${design_path} ${design_path}/$DESIGN\.v 
 
 ## -------------- Elaborating the design -------------- ##
 elaborate -top $DESIGN 
@@ -27,7 +22,7 @@ elaborate -top $DESIGN
 config_rtlds -reset -async rst_n -polarity low  
 
 ## ------------------- Reading SDC -------------------- ##
-read_sdc $DESIGN\_SYN.sdc
+read_sdc $DESIGN\.sdc
 
 ## --------------- Defining False Path ---------------- ##
 
@@ -45,7 +40,7 @@ check_cdc -clock_domain -find
 check_cdc -pair -find
 # Find Schemes
 check_cdc -scheme -add handshake -module Handshake_syn -map {{data din} {sreq sreq} {dreq dreq} {dack dack} {sack sack}}
-check_cdc -scheme -add fifo -module FIFO_syn -map {{rdata rdata} {wdata wdata} {wptr wptr} {rptr rptr} {wfull wfull} {rempty rempty} {winc winc} {rinc rinc}}
+check_cdc -scheme -add fifo -module FIFO_syn -map {{rdata rdata} {wdata wdata} {wptr wptr_gray} {rptr rptr_gray} {wfull wfull} {rempty rempty} {winc winc} {rinc rinc}}
 check_cdc -scheme -find
 # Find Convergence
 check_cdc -group -find
