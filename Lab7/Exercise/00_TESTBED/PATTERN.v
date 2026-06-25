@@ -6,6 +6,9 @@
 	`define CYCLE_TIME_clk1 47.1
 	`define CYCLE_TIME_clk2 10.1
 `endif
+`ifndef PAT_NUM
+	`define PAT_NUM 10
+`endif
 
 module PATTERN(
 	clk1,
@@ -132,6 +135,7 @@ task reset_task; begin
         $finish;
     end
     #CYCLE_clk1; release clk1;
+    release clk2;
 end endtask
 
 // Task to handle input
@@ -151,8 +155,8 @@ task input_task; begin
         in_kernel 	= in_kernel_reg;
 
         @(negedge clk1);
-        in_data = 'dx;
-        in_mode = 'dx;
+        in_row = 'dx;
+        in_kernel = 'dx;
     end
     in_valid = 1'b0;
 end endtask

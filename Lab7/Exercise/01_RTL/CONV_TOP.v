@@ -21,19 +21,13 @@ wire fifo_full;
 wire fifo_empty;
 wire fifo_rinc;
 wire [7:0] fifo_rdata; 
-
-// Custom flags to use if needed
-wire flag_handshake_to_clk1;
-wire flag_clk1_to_handshake;
-
-wire flag_handshake_to_clk2;
-wire flag_clk2_to_handshake;
-
-wire flag_fifo_to_clk2;
-wire flag_clk2_to_fifo;
-
-wire flag_fifo_to_clk1;
-wire flag_clk1_to_fifo;
+wire handshake_ready_clk1;
+wire data_valid_clk1;
+wire [29:0] data_clk1;
+wire in_data_valid_clk2;
+wire [29:0] in_data_clk2;
+wire conv_busy;
+wire out_data_valid_clk2;
 
 CLK_1_MODULE u_input_output (
     .clk (clk1),
@@ -41,20 +35,15 @@ CLK_1_MODULE u_input_output (
     .in_valid (in_valid),
 	.in_row (in_row),
 	.in_kernel (in_kernel),
-    .out_idle (sidle),
+    .out_idle (handshake_ready_clk1),
     .handshake_sready (data_valid_clk1),
     .handshake_din (data_clk1),
-    .flag_handshake_to_clk1(flag_handshake_to_clk1),
-    .flag_clk1_to_handshake(flag_clk1_to_handshake),
-	
 
 	.fifo_empty (fifo_empty),
     .fifo_rdata (fifo_rdata),
     .fifo_rinc (fifo_rinc),
     .out_valid (out_valid),
-    .out_data (out_data),
-    .flag_fifo_to_clk1(flag_fifo_to_clk1),
-	.flag_clk1_to_fifo(flag_clk1_to_fifo)
+    .out_data (out_data)
 );
 
 
@@ -62,18 +51,12 @@ Handshake_syn #(30) u_Handshake_syn (
     .sclk (clk1),
     .dclk (clk2),
     .rst_n (rst_n),
-    .sready (data_valid_clk1),
+    .svalid (data_valid_clk1),
     .din (data_clk1),
-    .dbusy (conv_busy),
-    .sidle (sidle),
+    .sready (handshake_ready_clk1),
     .dvalid (in_data_valid_clk2),
     .dout (in_data_clk2),
-
-    .flag_handshake_to_clk1(flag_handshake_to_clk1),
-    .flag_clk1_to_handshake(flag_clk1_to_handshake),
-
-    .flag_handshake_to_clk2(flag_handshake_to_clk2),
-    .flag_clk2_to_handshake(flag_clk2_to_handshake)
+    .dready (!conv_busy)
 );
 
 CLK_2_MODULE u_Conv (
@@ -84,13 +67,7 @@ CLK_2_MODULE u_Conv (
 	.fifo_full (fifo_full),
     .out_valid (out_data_valid_clk2),
     .out_data (out_data_clk2),
-    .busy (conv_busy),
-
-    .flag_handshake_to_clk2(flag_handshake_to_clk2),
-    .flag_clk2_to_handshake(flag_clk2_to_handshake),
-
-    .flag_fifo_to_clk2(flag_fifo_to_clk2),
-    .flag_clk2_to_fifo(flag_clk2_to_fifo)
+    .busy (conv_busy)
 );
 
 FIFO_syn #(.WIDTH(8), .WORDS(64)) u_FIFO_syn (
@@ -102,13 +79,7 @@ FIFO_syn #(.WIDTH(8), .WORDS(64)) u_FIFO_syn (
     .wfull (fifo_full),
     .rinc (fifo_rinc),
     .rdata (fifo_rdata),
-    .rempty (fifo_empty),
-
-    .flag_fifo_to_clk2(flag_fifo_to_clk2),
-    .flag_clk2_to_fifo(flag_clk2_to_fifo),
-
-    .flag_fifo_to_clk1(flag_fifo_to_clk1),
-	.flag_clk1_to_fifo(flag_clk1_to_fifo)
+    .rempty (fifo_empty)
 );
 
 endmodule

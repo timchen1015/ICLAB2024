@@ -8,6 +8,7 @@ define="Period_3"
 source_file="filelist.f"	# Name of your source file
 output_file="simv"      	# Desired output simulation file name
 log_file="vcs.log"      	# Desired log file name
+rtl_incdir=+incdir+../01_RTL
 syn_tcl="syn.tcl"       	# Name of your synthesis tcl file
 syn_log="syn.log"       	# Name of your synthesis log file
 pt_tcl="pt.tcl"       	# Name of your synthesis tcl file
@@ -25,6 +26,7 @@ VERDI=/usr/cad/synopsys/verdi/2019.06/
 DW_SIM=/usr/cad/synopsys/synthesis/cur/dw/sim_ver/
 UMC018_SIM=~iclabTA01/UMC018_CBDK/CIC/Verilog/fsa0m_a_generic_core_30.lib.src
 UMC018_IO_SIM=~iclabTA01/UMC018_CBDK/CIC/Verilog/fsa0m_a_t33_generic_io_30.lib.src
+VCS_FSDB_PLI=-P ${VERDI}/share/PLI/VCS/linux64/novas.tab ${VERDI}/share/PLI/VCS/linux64/pli.a
 
 ######################################
 # Simulation Option and Command
@@ -43,12 +45,31 @@ VCS_RTL_SIM = vcs ${TIMESCALE} \
     -debug_access+all \
     -y ${DW_SIM} \
     +libext+.v \
+    ${rtl_incdir} \
     -f ${source_file} \
     -o ${output_file} \
     -l ${log_file} \
-    -P ${VERDI}/share/PLI/VCS/linux64/novas.tab \
-       ${VERDI}/share/PLI/VCS/linux64/pli.a \
     +define+RTL \
+    +define+${define} \
+    +notimingchecks 
+
+VCS_RTL_FSDB_SIM = vcs ${TIMESCALE} \
+    -j${num_CPU_cores} \
+    -sverilog \
+    +v2k \
+    -full64 \
+    -Mupdate \
+    -R \
+    -debug_access+all \
+    -y ${DW_SIM} \
+    +libext+.v \
+    ${rtl_incdir} \
+    -f ${source_file} \
+    -o ${output_file} \
+    -l ${log_file} \
+    ${VCS_FSDB_PLI} \
+    +define+RTL \
+    +define+FSDB \
     +define+${define} \
     +notimingchecks 
 
@@ -245,6 +266,9 @@ clean_jg = rm -rf ./jgproject ./Report/*
 
 vcs_rtl:
 	${VCS_RTL_SIM}
+
+vcs_rtl_fsdb:
+	${VCS_RTL_FSDB_SIM}
 
 vcs_gate:
 	${VCS_GATE_SIM}

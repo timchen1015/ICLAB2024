@@ -20,10 +20,12 @@ wire [7:0] out_data;
 
 initial begin
   `ifdef RTL
+    `ifdef FSDB
     $fsdbDumpfile("CONV_TOP.fsdb");
 	$fsdbDumpvars(0,"+mda");
+    `endif
   `elsif GATE
-    //$fsdbDumpfile("CONV_TOP.fsdb");
+	//$fsdbDumpfile("CONV_TOP.fsdb");
 	$sdf_annotate("CONV_TOP_SYN_pt.sdf",I_CONV,,,"maximum");      
 	//$fsdbDumpvars(0,"+mda");
   `endif
