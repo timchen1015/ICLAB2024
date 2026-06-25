@@ -119,9 +119,6 @@ Using next-pointer comparison lets `wfull` and `rempty` update in the same cycle
 ## Verification
 
 ### RTL Simulation
-
-RTL simulation can be run from the testbed directory:
-
 The generated test data contains 10 patterns by default.
 
 ![Simulation Pass](img/Simulation_pass.png)
